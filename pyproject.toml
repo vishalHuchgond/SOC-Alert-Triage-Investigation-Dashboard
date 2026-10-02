@@ -1,0 +1,15 @@
+[project]
+name = "soc-alert-triage-platform"
+version = "1.0.0"
+description = "SOC Alert Triage & Investigation Platform - portfolio project"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "C4"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Incident Report {{ incident.incident_id }}</title>
+<style>
+  body { font-family: "Segoe UI", Arial, sans-serif; color: #1f2937; margin: 40px; line-height: 1.5; }
+  h1 { color: #0B1120; border-bottom: 3px solid #38BDF8; padding-bottom: 8px; }
+  h2 { color: #111827; margin-top: 28px; border-bottom: 1px solid #d1d5db; padding-bottom: 4px; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 13px; }
+  th, td { border: 1px solid #d1d5db; padding: 6px 10px; text-align: left; vertical-align: top; }
+  th { background: #f3f4f6; }
+  .meta { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px 16px; border-radius: 6px; }
+  .crit { color: #DC2626; font-weight: 700; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 10px; color: #fff; font-size: 12px; }
+  .b-critical { background: #DC2626; } .b-high { background: #EF4444; }
+  .b-medium { background: #F59E0B; } .b-low { background: #22C55E; }
+  pre { background: #0B1120; color: #e2e8f0; padding: 12px; border-radius: 6px; font-size: 12px; white-space: pre-wrap; word-break: break-all; }
+  .timeline td:first-child { white-space: nowrap; color: #64748b; width: 180px; }
+  .footer { margin-top: 40px; color: #94A3B8; font-size: 12px; border-top: 1px solid #e2e8f0; padding-top: 8px; }
+</style>
+</head>
+<body>
+<h1>Incident Report &mdash; {{ incident.incident_id }}</h1>
+<p><strong>{{ incident.title }}</strong></p>
+
+<h2>Executive Summary</h2>
+<p>Incident <strong>{{ incident.incident_id }}</strong> (severity:
+<span class="badge b-{{ incident.severity }}">{{ incident.severity|upper }}</span>,
+risk score <strong>{{ incident.risk_score }}/100</strong>) was opened by
+<strong>{{ incident.analyst }}</strong> on {{ incident.created_at }} and is currently
+<strong>{{ incident.status }}</strong>. It aggregates {{ alerts|length }} alert(s).
+Final verdict: <strong>{{ final_verdict }}</strong>.</p>
+
+<div class="meta">
+<h2>Incident Details</h2>
+<table>
+  <tr><th>Incident ID</th><td>{{ incident.incident_id }}</td><th>Status</th><td>{{ incident.status }}</td></tr>
+  <tr><th>Severity</th><td>{{ incident.severity }}</td><th>Risk Score</th><td>{{ incident.risk_score }}/100</td></tr>
+  <tr><th>Assigned Analyst</th><td>{{ incident.analyst }}</td><th>Created</th><td>{{ incident.created_at }}</td></tr>
+  <tr><th>Related Alerts</th><td>{{ incident.alert_ids|join(", ") }}</td><th>Last Updated</th><td>{{ incident.updated_at }}</td></tr>
+</table>
+</div>
+
+<h2>Detection</h2>
+<table>
+  <tr><th>Alert</th><th>Detection</th><th>Severity</th><th>Risk</th><th>Source</th><th>User</th><th>MITRE</th><th>Verdict</th></tr>
+  {% for a in alerts %}
+  <tr>
+    <td>{{ a.alert_id }}</td><td>{{ a.detection_name }}</td><td>{{ a.severity }}</td>
+    <td>{{ a.risk_score }}</td><td>{{ a.source_ip or "-" }}</td><td>{{ a.username or "-" }}</td>
+    <td>{{ a.mitre_label }}</td><td>{{ a.verdict or "Pending" }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h2>Risk Score Breakdown</h2>
+{% for a in alerts %}
+<p><strong>{{ a.alert_id }}</strong> &mdash; score {{ a.risk_score }}/100 (confidence: {{ a.confidence }}):</p>
+<ul>{% for line in a.risk_breakdown %}<li>{{ line }}</li>{% endfor %}</ul>
+{% endfor %}
+
+<h2>Timeline</h2>
+<table class="timeline">
+  <tr><th>Event Time</th><th>Recorded</th><th>Type</th><th>Description</th></tr>
+  {% for t in timeline %}
+  <tr><td>{{ t.event_time or "-" }}</td><td>{{ t.recorded_at }}</td><td>{{ t.entry_type }}</td><td>{{ t.description }}</td></tr>
+  {% endfor %}
+</table>
+
+<h2>Technical Analysis</h2>
+<p>The following normalized events (raw log lines preserved as evidence) contributed to the alerts:</p>
+<table>
+  <tr><th>Time (UTC)</th><th>Source</th><th>Event</th><th>Raw</th></tr>
+  {% for e in events %}
+  <tr>
+    <td>{{ e.timestamp or "-" }}</td><td>{{ e.log_source or "-" }}</td>
+    <td>{{ e.event_id or e.event_type or "-" }}</td>
+    <td><code>{{ e.raw_event }}</code></td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h2>IOC Table</h2>
+<table>
+  <tr><th>Type</th><th>Value</th><th>Reputation</th><th>Intelligence Source</th><th>First Seen</th><th>Last Seen</th></tr>
+  {% for i in iocs %}
+  <tr><td>{{ i.type }}</td><td>{{ i.value }}</td><td>{{ i.reputation }}</td>
+      <td>{{ i.intel_source }}</td><td>{{ i.first_seen or "-" }}</td><td>{{ i.last_seen or "-" }}</td></tr>
+  {% else %}
+  <tr><td colspan="6">No IOCs recorded for this incident.</td></tr>
+  {% endfor %}
+</table>
+
+<h2>MITRE ATT&amp;CK</h2>
+<ul>{% for m in incident.mitre_ids %}<li>{{ m }}</li>{% endfor %}</ul>
+
+<h2>Investigation Findings</h2>
+{% for a in alerts %}
+<p><strong>{{ a.alert_id }}</strong> ({{ a.detection_name }}): {{ a.description }}<br>
+Verdict: {{ a.verdict or "Pending" }} &mdash; {{ a.verdict_reason }}</p>
+{% endfor %}
+
+<h2>Recommendations</h2>
+<ul>
+  <li>Contain affected hosts/accounts if the verdict is True Positive.</li>
+  <li>Reset credentials for any account with a successful login after failures.</li>
+  <li>Block confirmed malicious IOCs at the perimeter and search the environment for them.</li>
+  <li>Tune or allowlist detections that were judged False Positive to reduce alert fatigue.</li>
+</ul>
+
+<h2>Evidence</h2>
+<table>
+  <tr><th>ID</th><th>Type</th><th>Description</th><th>Timestamp</th></tr>
+  {% for e in evidence %}
+  <tr><td>{{ e.evidence_id }}</td><td>{{ e.type }}</td><td>{{ e.description }}</td><td>{{ e.timestamp or "-" }}</td></tr>
+  {% else %}
+  <tr><td colspan="4">No evidence items recorded.</td></tr>
+  {% endfor %}
+</table>
+
+<div class="footer">Generated by SOC Alert Triage &amp; Investigation Platform v1.0 &mdash; report ID {{ incident.incident_id }}</div>
+</body>
+</html>

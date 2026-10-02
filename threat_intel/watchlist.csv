@@ -1,0 +1,7 @@
+type,value,reason,severity
+ipv4,203.0.113.99,SAMPLE: known brute-force source (documentation range),high
+ipv4,192.0.2.44,SAMPLE: known C2 callback (documentation range),critical
+ipv4,198.51.100.23,SAMPLE: port-scan origin (documentation range),medium
+domain,malware.example,SAMPLE: fake C2 domain (reserved documentation TLD space),high
+domain,phishing.example,SAMPLE: credential-harvesting page,medium
+sha256,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,SAMPLE: placeholder empty-file hash,low

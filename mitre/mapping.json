@@ -1,0 +1,68 @@
+{
+  "T1110": {
+    "name": "Brute Force",
+    "tactics": ["Credential Access"],
+    "description": "Adversaries may attempt to gain access to accounts through repeated password guessing.",
+    "rules": ["multiple_failed_logins", "success_after_failures"]
+  },
+  "T1110.001": {
+    "name": "Brute Force: Password Guessing",
+    "tactics": ["Credential Access"],
+    "description": "Repeated failed logins against a small number of accounts from one source.",
+    "rules": ["brute_force"]
+  },
+  "T1110.003": {
+    "name": "Brute Force: Password Spraying",
+    "tactics": ["Credential Access"],
+    "description": "One source failing against many distinct accounts to avoid lockouts.",
+    "rules": ["password_spray"]
+  },
+  "T1059.001": {
+    "name": "Command and Scripting Interpreter: PowerShell",
+    "tactics": ["Execution"],
+    "description": "PowerShell used for execution, including encoded and download-cradle commands.",
+    "rules": ["suspicious_powershell", "encoded_powershell"]
+  },
+  "T1027": {
+    "name": "Obfuscated Files or Information",
+    "tactics": ["Defense Evasion"],
+    "description": "Base64-encoded commands to evade simple detection.",
+    "rules": ["encoded_powershell"]
+  },
+  "T1059.003": {
+    "name": "Command and Scripting Interpreter: Windows Command Shell",
+    "tactics": ["Execution"],
+    "description": "cmd.exe spawned in suspicious contexts (Office, browsers, web servers).",
+    "rules": ["command_shell_execution"]
+  },
+  "T1046": {
+    "name": "Network Service Discovery",
+    "tactics": ["Discovery"],
+    "description": "One source connecting to many distinct ports - port scanning.",
+    "rules": ["port_scanning"]
+  },
+  "T1218": {
+    "name": "System Binary Proxy Execution (LOLBin abuse)",
+    "tactics": ["Defense Evasion", "Execution"],
+    "description": "Signed system binaries (certutil, mshta, rundll32, ...) abused for execution.",
+    "rules": ["suspicious_process_execution"]
+  },
+  "T1136.001": {
+    "name": "Create Account: Local Account",
+    "tactics": ["Persistence"],
+    "description": "A new local account is created (Event ID 4720).",
+    "rules": ["account_creation"]
+  },
+  "T1053.005": {
+    "name": "Scheduled Task/Job: Scheduled Task",
+    "tactics": ["Persistence", "Privilege Escalation", "Execution"],
+    "description": "A scheduled task is created for persistence or privilege escalation.",
+    "rules": ["scheduled_task_creation"]
+  },
+  "T1070.001": {
+    "name": "Indicator Removal: Clear Windows Event Logs",
+    "tactics": ["Defense Evasion"],
+    "description": "Security event log cleared (Event ID 1102 / 104).",
+    "rules": ["security_log_clearing"]
+  }
+}

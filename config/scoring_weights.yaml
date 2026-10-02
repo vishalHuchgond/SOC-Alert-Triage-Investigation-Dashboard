@@ -1,0 +1,16 @@
+# Risk scoring factor weights (0-100 total, capped by the scorer).
+severity:
+  low: 10
+  medium: 20
+  high: 30
+  critical: 40
+repeat:
+  points_per_event: 4
+  max_extra_events: 5      # points for up to N events beyond the first
+watchlist_hit: 20
+ioc_reputation:
+  malicious: 25
+  suspicious: 10
+asset_criticality: 15
+mitre_mapped: 10
+correlated: 10

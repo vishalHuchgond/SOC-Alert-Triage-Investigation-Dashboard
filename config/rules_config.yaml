@@ -1,0 +1,65 @@
+# Detection rule thresholds and severities. Tune here, never in code.
+rules:
+  brute_force:
+    enabled: true
+    window_minutes: 10
+    threshold: 5
+    severity: high
+    mitre_id: "T1110.001"
+  password_spray:
+    enabled: true
+    window_minutes: 10
+    distinct_accounts: 5
+    severity: high
+    mitre_id: "T1110.003"
+  multiple_failed_logins:
+    enabled: true
+    window_minutes: 10
+    threshold: 5
+    severity: medium
+    mitre_id: "T1110"
+  success_after_failures:
+    enabled: true
+    window_minutes: 15
+    failure_threshold: 3
+    severity: critical
+    mitre_id: "T1110"
+  suspicious_powershell:
+    enabled: true
+    severity: high
+    mitre_id: "T1059.001"
+  encoded_powershell:
+    enabled: true
+    severity: high
+    mitre_id: "T1059.001"
+  command_shell_execution:
+    enabled: true
+    severity: medium
+    mitre_id: "T1059.003"
+  port_scanning:
+    enabled: true
+    window_minutes: 10
+    distinct_ports: 20
+    severity: medium
+    mitre_id: "T1046"
+  suspicious_process_execution:
+    enabled: true
+    severity: high
+    mitre_id: "T1218"
+  account_creation:
+    enabled: true
+    severity: medium
+    mitre_id: "T1136.001"
+  scheduled_task_creation:
+    enabled: true
+    severity: medium
+    mitre_id: "T1053.005"
+  security_log_clearing:
+    enabled: true
+    severity: high
+    mitre_id: "T1070.001"
+
+# Asset/account criticality used by risk scoring.
+critical_assets:
+  hosts: ["DC01", "DC02", "SRV-DB-01"]
+  accounts: ["administrator", "svc_backup", "helpdesk"]
